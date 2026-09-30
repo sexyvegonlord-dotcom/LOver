@@ -1,0 +1,267 @@
+-- Platform + Noclip GUI (Personal Use)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Remove old GUI if it exists
+local oldGui = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("PlatformGUI")
+if oldGui then
+	oldGui:Destroy()
+end
+
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+-- Variables
+local spawnedPart = nil
+local currentThickness = 4 -- starting vertical size
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "PlatformGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 280, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -140, 0.25, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 32)
+TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 10)
+TitleCorner.Parent = TitleBar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -70, 1, 0)
+TitleLabel.Position = UDim2.new(0, 12, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Platform Tool"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 16
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TitleBar
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Name = "Minimize"
+MinimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+MinimizeBtn.Position = UDim2.new(1, -36, 0, 2)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+MinimizeBtn.Text = "−"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.TextSize = 20
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.Parent = TitleBar
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 6)
+MinCorner.Parent = MinimizeBtn
+
+-- Content
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "Content"
+ContentFrame.Size = UDim2.new(1, -20, 1, -48)
+ContentFrame.Position = UDim2.new(0, 10, 0, 40)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+-- Spawn Platform Button
+local SpawnBtn = Instance.new("TextButton")
+SpawnBtn.Name = "SpawnButton"
+SpawnBtn.Size = UDim2.new(1, 0, 0, 40)
+SpawnBtn.Position = UDim2.new(0, 0, 0, 0)
+SpawnBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+SpawnBtn.Text = "Spawn Platform"
+SpawnBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpawnBtn.TextSize = 15
+SpawnBtn.Font = Enum.Font.GothamBold
+SpawnBtn.Parent = ContentFrame
+
+local SpawnCorner = Instance.new("UICorner")
+SpawnCorner.CornerRadius = UDim.new(0, 8)
+SpawnCorner.Parent = SpawnBtn
+
+-- Thickness Label
+local ThicknessLabel = Instance.new("TextLabel")
+ThicknessLabel.Size = UDim2.new(1, 0, 0, 22)
+ThicknessLabel.Position = UDim2.new(0, 0, 0, 50)
+ThicknessLabel.BackgroundTransparency = 1
+ThicknessLabel.Text = "Thickness: " .. currentThickness
+ThicknessLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+ThicknessLabel.TextSize = 14
+ThicknessLabel.Font = Enum.Font.Gotham
+ThicknessLabel.Parent = ContentFrame
+
+-- Increase Thickness
+local IncreaseBtn = Instance.new("TextButton")
+IncreaseBtn.Name = "Increase"
+IncreaseBtn.Size = UDim2.new(0.48, 0, 0, 36)
+IncreaseBtn.Position = UDim2.new(0, 0, 0, 78)
+IncreaseBtn.BackgroundColor3 = Color3.fromRGB(50, 180, 80)
+IncreaseBtn.Text = "+ Thicker"
+IncreaseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+IncreaseBtn.TextSize = 14
+IncreaseBtn.Font = Enum.Font.GothamBold
+IncreaseBtn.Parent = ContentFrame
+
+local IncCorner = Instance.new("UICorner")
+IncCorner.CornerRadius = UDim.new(0, 8)
+IncCorner.Parent = IncreaseBtn
+
+-- Decrease Thickness
+local DecreaseBtn = Instance.new("TextButton")
+DecreaseBtn.Name = "Decrease"
+DecreaseBtn.Size = UDim2.new(0.48, 0, 0, 36)
+DecreaseBtn.Position = UDim2.new(0.52, 0, 0, 78)
+DecreaseBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 50)
+DecreaseBtn.Text = "- Thinner"
+DecreaseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+DecreaseBtn.TextSize = 14
+DecreaseBtn.Font = Enum.Font.GothamBold
+DecreaseBtn.Parent = ContentFrame
+
+local DecCorner = Instance.new("UICorner")
+DecCorner.CornerRadius = UDim.new(0, 8)
+DecCorner.Parent = DecreaseBtn
+
+-- Noclip Above Button
+local NoclipBtn = Instance.new("TextButton")
+NoclipBtn.Name = "NoclipButton"
+NoclipBtn.Size = UDim2.new(1, 0, 0, 40)
+NoclipBtn.Position = UDim2.new(0, 0, 0, 130)
+NoclipBtn.BackgroundColor3 = Color3.fromRGB(160, 60, 220)
+NoclipBtn.Text = "Make Above Part See-Through"
+NoclipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoclipBtn.TextSize = 14
+NoclipBtn.Font = Enum.Font.GothamBold
+NoclipBtn.Parent = ContentFrame
+
+local NoclipCorner = Instance.new("UICorner")
+NoclipCorner.CornerRadius = UDim.new(0, 8)
+NoclipCorner.Parent = NoclipBtn
+
+-- Status
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+StatusLabel.Position = UDim2.new(0, 0, 0, 185)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = ""
+StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
+StatusLabel.TextSize = 12
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Parent = ContentFrame
+
+-- Minimize / Maximize
+local isMinimized = false
+local originalSize = MainFrame.Size
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+	isMinimized = not isMinimized
+	if isMinimized then
+		ContentFrame.Visible = false
+		MainFrame.Size = UDim2.new(0, 280, 0, 32)
+		MinimizeBtn.Text = "+"
+	else
+		ContentFrame.Visible = true
+		MainFrame.Size = originalSize
+		MinimizeBtn.Text = "−"
+	end
+end)
+
+-- Spawn Platform
+local function spawnPlatform()
+	if spawnedPart then
+		spawnedPart:Destroy()
+	end
+
+	local hrp = HumanoidRootPart
+	if not hrp then return end
+
+	local part = Instance.new("Part")
+	part.Name = "SpawnedPlatform"
+	part.Size = Vector3.new(30, currentThickness, 30) -- wide + thick
+	part.Position = hrp.Position - Vector3.new(0, 30 + (currentThickness / 2), 0)
+	part.Anchored = true
+	part.CanCollide = true
+	part.Material = Enum.Material.SmoothPlastic
+	part.Color = Color3.fromRGB(80, 80, 90)
+	part.Parent = workspace
+
+	spawnedPart = part
+	StatusLabel.Text = "Platform spawned"
+	StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
+end
+
+-- Update thickness
+local function updateThickness(amount)
+	currentThickness = math.clamp(currentThickness + amount, 1, 50)
+	ThicknessLabel.Text = "Thickness: " .. currentThickness
+
+	if spawnedPart and spawnedPart.Parent then
+		local oldSize = spawnedPart.Size
+		local oldPos = spawnedPart.Position
+		spawnedPart.Size = Vector3.new(30, currentThickness, 30)
+		-- Keep the top of the part in the same place when resizing
+		spawnedPart.Position = Vector3.new(oldPos.X, oldPos.Y + (currentThickness - oldSize.Y) / 2, oldPos.Z)
+	end
+end
+
+-- Make part above see-through + walkable through
+local function makeAboveSeeThrough()
+	local hrp = HumanoidRootPart
+	if not hrp then return end
+
+	local origin = hrp.Position
+	local direction = Vector3.new(0, 50, 0) -- look upward
+
+	local rayParams = RaycastParams.new()
+	rayParams.FilterDescendantsInstances = {Character}
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+
+	local result = workspace:Raycast(origin, direction, rayParams)
+
+	if result and result.Instance and result.Instance:IsA("BasePart") then
+		local part = result.Instance
+		part.Transparency = 0.5
+		part.CanCollide = false
+		StatusLabel.Text = "Made " .. part.Name .. " see-through"
+		StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
+	else
+		StatusLabel.Text = "No part found above you"
+		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+	end
+end
+
+-- Buttons
+SpawnBtn.MouseButton1Click:Connect(spawnPlatform)
+IncreaseBtn.MouseButton1Click:Connect(function()
+	updateThickness(1)
+end)
+DecreaseBtn.MouseButton1Click:Connect(function()
+	updateThickness(-1)
+end)
+NoclipBtn.MouseButton1Click:Connect(makeAboveSeeThrough)
+
+-- Keep character reference updated
+LocalPlayer.CharacterAdded:Connect(function(newChar)
+	Character = newChar
+	HumanoidRootPart = newChar:WaitForChild("HumanoidRootPart")
+end)
