@@ -14,7 +14,7 @@ local floorPart = nil
 local skyPart = nil
 local floorThickness = 6
 local skyThickness = 8
-local affectedParts = {} -- for undo
+local affectedParts = {} -- stores all parts we changed
 
 -- GUI
 local ScreenGui = Instance.new("ScreenGui")
@@ -207,7 +207,7 @@ local MakeSeeThroughBtn = Instance.new("TextButton")
 MakeSeeThroughBtn.Size = UDim2.new(1, 0, 0, 32)
 MakeSeeThroughBtn.Position = UDim2.new(0, 0, 0, 312)
 MakeSeeThroughBtn.BackgroundColor3 = Color3.fromRGB(220, 140, 30)
-MakeSeeThroughBtn.Text = "Make 2 Parts Above See-Through + Walkable"
+MakeSeeThroughBtn.Text = "Make ALL Parts Above See-Through + Walkable"
 MakeSeeThroughBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 MakeSeeThroughBtn.TextSize = 12
 MakeSeeThroughBtn.Font = Enum.Font.GothamBold
@@ -217,7 +217,7 @@ local UndoSeeThroughBtn = Instance.new("TextButton")
 UndoSeeThroughBtn.Size = UDim2.new(1, 0, 0, 32)
 UndoSeeThroughBtn.Position = UDim2.new(0, 0, 0, 350)
 UndoSeeThroughBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 110)
-UndoSeeThroughBtn.Text = "Undo (Restore Parts)"
+UndoSeeThroughBtn.Text = "Undo (Restore ALL Parts)"
 UndoSeeThroughBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 UndoSeeThroughBtn.TextSize = 13
 UndoSeeThroughBtn.Font = Enum.Font.GothamBold
@@ -289,7 +289,7 @@ StatusLabel.TextSize = 12
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.Parent = Content
 
--- Add corners to all buttons
+-- Corners
 for _, btn in pairs({SpawnFloorBtn, FloorPlus, FloorMinus, SpawnSkyBtn, SkyPlus, SkyMinus, DeleteSkyBtn, MakeSeeThroughBtn, UndoSeeThroughBtn, ToolBigBtn, CharHitboxBtn}) do
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, 7)
@@ -325,7 +325,7 @@ local function spawnFloor()
 
 	local part = Instance.new("Part")
 	part.Name = "SuperFloor"
-	part.Size = Vector3.new(1000, floorThickness, 1000) -- 1000x1000
+	part.Size = Vector3.new(1000, floorThickness, 1000)
 	part.Position = hrp.Position - Vector3.new(0, 30 + (floorThickness / 2), 0)
 	part.Anchored = true
 	part.CanCollide = true
@@ -388,17 +388,17 @@ local function deleteSky()
 	end
 end
 
--- Make 2 parts above see-through + no collide
+-- Make ALL parts above see-through + no collide
 local function makeAboveSeeThrough()
 	affectedParts = {}
 	local hrp = HumanoidRootPart
 	if not hrp then return end
 
 	local origin = hrp.Position
-	local direction = Vector3.new(0, 80, 0)
+	local direction = Vector3.new(0, 200, 0) -- long upward ray
 	local filterList = {Character}
 
-	for i = 1, 2 do
+	while true do
 		local rayParams = RaycastParams.new()
 		rayParams.FilterDescendantsInstances = filterList
 		rayParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -413,7 +413,9 @@ local function makeAboveSeeThrough()
 			})
 			part.Transparency = 0.5
 			part.CanCollide = false
-			table.insert(filterList, part) -- so next raycast skips this one
+			table.insert(filterList, part) -- ignore this part on next ray
+		else
+			break -- no more parts above
 		end
 	end
 
@@ -426,7 +428,7 @@ local function makeAboveSeeThrough()
 	end
 end
 
--- Undo
+-- Undo ALL
 local function undoSeeThrough()
 	for _, data in pairs(affectedParts) do
 		if data.Part and data.Part.Parent then
@@ -435,7 +437,7 @@ local function undoSeeThrough()
 		end
 	end
 	affectedParts = {}
-	StatusLabel.Text = "Parts restored"
+	StatusLabel.Text = "All parts restored"
 	StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
 end
 
@@ -500,12 +502,12 @@ end
 
 -- Connect buttons
 SpawnFloorBtn.MouseButton1Click:Connect(spawnFloor)
-FloorPlus.MouseButton1Click:Connect(function() changeFloorThickness(2) end)
-FloorMinus.MouseButton1Click:Connect(function() changeFloorThickness(-2) end)
+FloorPlus.MouseButton1Click:Connect(function() changeFloorThickness(1) end)   -- 1 stud
+FloorMinus.MouseButton1Click:Connect(function() changeFloorThickness(-1) end) -- 1 stud
 
 SpawnSkyBtn.MouseButton1Click:Connect(spawnSky)
-SkyPlus.MouseButton1Click:Connect(function() changeSkyThickness(3) end)
-SkyMinus.MouseButton1Click:Connect(function() changeSkyThickness(-3) end)
+SkyPlus.MouseButton1Click:Connect(function() changeSkyThickness(1) end)   -- 1 stud
+SkyMinus.MouseButton1Click:Connect(function() changeSkyThickness(-1) end) -- 1 stud
 DeleteSkyBtn.MouseButton1Click:Connect(deleteSky)
 
 MakeSeeThroughBtn.MouseButton1Click:Connect(makeAboveSeeThrough)
