@@ -1,6 +1,5 @@
--- Platform + Noclip GUI (Personal Use)
+-- Platform + Sky Crush GUI (Personal Use)
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 -- Remove old GUI if it exists
@@ -13,10 +12,12 @@ local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
 -- Variables
-local spawnedPart = nil
-local currentThickness = 4 -- starting vertical size
+local floorPart = nil
+local skyPart = nil
+local floorThickness = 6
+local skyThickness = 8
 
--- GUI Creation
+-- GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "PlatformGUI"
 ScreenGui.ResetOnSpawn = false
@@ -25,8 +26,8 @@ ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 280, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -140, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 300, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -150, 0.2, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -39,7 +40,6 @@ UICorner.Parent = MainFrame
 
 -- Title Bar
 local TitleBar = Instance.new("Frame")
-TitleBar.Name = "TitleBar"
 TitleBar.Size = UDim2.new(1, 0, 0, 32)
 TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 TitleBar.BorderSizePixel = 0
@@ -61,7 +61,6 @@ TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
 
 local MinimizeBtn = Instance.new("TextButton")
-MinimizeBtn.Name = "Minimize"
 MinimizeBtn.Size = UDim2.new(0, 28, 0, 28)
 MinimizeBtn.Position = UDim2.new(1, -36, 0, 2)
 MinimizeBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
@@ -76,191 +75,263 @@ MinCorner.CornerRadius = UDim.new(0, 6)
 MinCorner.Parent = MinimizeBtn
 
 -- Content
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "Content"
-ContentFrame.Size = UDim2.new(1, -20, 1, -48)
-ContentFrame.Position = UDim2.new(0, 10, 0, 40)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainFrame
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -20, 1, -48)
+Content.Position = UDim2.new(0, 10, 0, 40)
+Content.BackgroundTransparency = 1
+Content.Parent = MainFrame
 
--- Spawn Platform Button
-local SpawnBtn = Instance.new("TextButton")
-SpawnBtn.Name = "SpawnButton"
-SpawnBtn.Size = UDim2.new(1, 0, 0, 40)
-SpawnBtn.Position = UDim2.new(0, 0, 0, 0)
-SpawnBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-SpawnBtn.Text = "Spawn Platform"
-SpawnBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpawnBtn.TextSize = 15
-SpawnBtn.Font = Enum.Font.GothamBold
-SpawnBtn.Parent = ContentFrame
+-- ========== FLOOR SECTION ==========
+local FloorTitle = Instance.new("TextLabel")
+FloorTitle.Size = UDim2.new(1, 0, 0, 20)
+FloorTitle.Position = UDim2.new(0, 0, 0, 0)
+FloorTitle.BackgroundTransparency = 1
+FloorTitle.Text = "FLOOR PLATFORM"
+FloorTitle.TextColor3 = Color3.fromRGB(0, 180, 255)
+FloorTitle.TextSize = 13
+FloorTitle.Font = Enum.Font.GothamBold
+FloorTitle.Parent = Content
 
-local SpawnCorner = Instance.new("UICorner")
-SpawnCorner.CornerRadius = UDim.new(0, 8)
-SpawnCorner.Parent = SpawnBtn
+local SpawnFloorBtn = Instance.new("TextButton")
+SpawnFloorBtn.Size = UDim2.new(1, 0, 0, 36)
+SpawnFloorBtn.Position = UDim2.new(0, 0, 0, 24)
+SpawnFloorBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 220)
+SpawnFloorBtn.Text = "Spawn Super Wide Floor"
+SpawnFloorBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpawnFloorBtn.TextSize = 14
+SpawnFloorBtn.Font = Enum.Font.GothamBold
+SpawnFloorBtn.Parent = Content
 
--- Thickness Label
-local ThicknessLabel = Instance.new("TextLabel")
-ThicknessLabel.Size = UDim2.new(1, 0, 0, 22)
-ThicknessLabel.Position = UDim2.new(0, 0, 0, 50)
-ThicknessLabel.BackgroundTransparency = 1
-ThicknessLabel.Text = "Thickness: " .. currentThickness
-ThicknessLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
-ThicknessLabel.TextSize = 14
-ThicknessLabel.Font = Enum.Font.Gotham
-ThicknessLabel.Parent = ContentFrame
+local FloorCorner = Instance.new("UICorner")
+FloorCorner.CornerRadius = UDim.new(0, 8)
+FloorCorner.Parent = SpawnFloorBtn
 
--- Increase Thickness
-local IncreaseBtn = Instance.new("TextButton")
-IncreaseBtn.Name = "Increase"
-IncreaseBtn.Size = UDim2.new(0.48, 0, 0, 36)
-IncreaseBtn.Position = UDim2.new(0, 0, 0, 78)
-IncreaseBtn.BackgroundColor3 = Color3.fromRGB(50, 180, 80)
-IncreaseBtn.Text = "+ Thicker"
-IncreaseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-IncreaseBtn.TextSize = 14
-IncreaseBtn.Font = Enum.Font.GothamBold
-IncreaseBtn.Parent = ContentFrame
+local FloorThickLabel = Instance.new("TextLabel")
+FloorThickLabel.Size = UDim2.new(1, 0, 0, 20)
+FloorThickLabel.Position = UDim2.new(0, 0, 0, 66)
+FloorThickLabel.BackgroundTransparency = 1
+FloorThickLabel.Text = "Floor Thickness: " .. floorThickness
+FloorThickLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+FloorThickLabel.TextSize = 13
+FloorThickLabel.Font = Enum.Font.Gotham
+FloorThickLabel.Parent = Content
 
-local IncCorner = Instance.new("UICorner")
-IncCorner.CornerRadius = UDim.new(0, 8)
-IncCorner.Parent = IncreaseBtn
+local FloorPlus = Instance.new("TextButton")
+FloorPlus.Size = UDim2.new(0.48, 0, 0, 32)
+FloorPlus.Position = UDim2.new(0, 0, 0, 90)
+FloorPlus.BackgroundColor3 = Color3.fromRGB(50, 170, 70)
+FloorPlus.Text = "+ Thicker"
+FloorPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
+FloorPlus.TextSize = 13
+FloorPlus.Font = Enum.Font.GothamBold
+FloorPlus.Parent = Content
 
--- Decrease Thickness
-local DecreaseBtn = Instance.new("TextButton")
-DecreaseBtn.Name = "Decrease"
-DecreaseBtn.Size = UDim2.new(0.48, 0, 0, 36)
-DecreaseBtn.Position = UDim2.new(0.52, 0, 0, 78)
-DecreaseBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 50)
-DecreaseBtn.Text = "- Thinner"
-DecreaseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-DecreaseBtn.TextSize = 14
-DecreaseBtn.Font = Enum.Font.GothamBold
-DecreaseBtn.Parent = ContentFrame
+local FloorMinus = Instance.new("TextButton")
+FloorMinus.Size = UDim2.new(0.48, 0, 0, 32)
+FloorMinus.Position = UDim2.new(0.52, 0, 0, 90)
+FloorMinus.BackgroundColor3 = Color3.fromRGB(190, 70, 50)
+FloorMinus.Text = "- Thinner"
+FloorMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
+FloorMinus.TextSize = 13
+FloorMinus.Font = Enum.Font.GothamBold
+FloorMinus.Parent = Content
 
-local DecCorner = Instance.new("UICorner")
-DecCorner.CornerRadius = UDim.new(0, 8)
-DecCorner.Parent = DecreaseBtn
+-- ========== SKY SECTION ==========
+local SkyTitle = Instance.new("TextLabel")
+SkyTitle.Size = UDim2.new(1, 0, 0, 20)
+SkyTitle.Position = UDim2.new(0, 0, 0, 135)
+SkyTitle.BackgroundTransparency = 1
+SkyTitle.Text = "SKY CRUSH BLOCK"
+SkyTitle.TextColor3 = Color3.fromRGB(220, 80, 255)
+SkyTitle.TextSize = 13
+SkyTitle.Font = Enum.Font.GothamBold
+SkyTitle.Parent = Content
 
--- Noclip Above Button
-local NoclipBtn = Instance.new("TextButton")
-NoclipBtn.Name = "NoclipButton"
-NoclipBtn.Size = UDim2.new(1, 0, 0, 40)
-NoclipBtn.Position = UDim2.new(0, 0, 0, 130)
-NoclipBtn.BackgroundColor3 = Color3.fromRGB(160, 60, 220)
-NoclipBtn.Text = "Make Above Part See-Through"
-NoclipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-NoclipBtn.TextSize = 14
-NoclipBtn.Font = Enum.Font.GothamBold
-NoclipBtn.Parent = ContentFrame
+local SpawnSkyBtn = Instance.new("TextButton")
+SpawnSkyBtn.Size = UDim2.new(1, 0, 0, 36)
+SpawnSkyBtn.Position = UDim2.new(0, 0, 0, 159)
+SpawnSkyBtn.BackgroundColor3 = Color3.fromRGB(160, 50, 200)
+SpawnSkyBtn.Text = "Spawn Sky Crush Block"
+SpawnSkyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpawnSkyBtn.TextSize = 14
+SpawnSkyBtn.Font = Enum.Font.GothamBold
+SpawnSkyBtn.Parent = Content
 
-local NoclipCorner = Instance.new("UICorner")
-NoclipCorner.CornerRadius = UDim.new(0, 8)
-NoclipCorner.Parent = NoclipBtn
+local SkyCorner = Instance.new("UICorner")
+SkyCorner.CornerRadius = UDim.new(0, 8)
+SkyCorner.Parent = SpawnSkyBtn
+
+local SkyThickLabel = Instance.new("TextLabel")
+SkyThickLabel.Size = UDim2.new(1, 0, 0, 20)
+SkyThickLabel.Position = UDim2.new(0, 0, 0, 201)
+SkyThickLabel.BackgroundTransparency = 1
+SkyThickLabel.Text = "Sky Thickness: " .. skyThickness
+SkyThickLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+SkyThickLabel.TextSize = 13
+SkyThickLabel.Font = Enum.Font.Gotham
+SkyThickLabel.Parent = Content
+
+local SkyPlus = Instance.new("TextButton")
+SkyPlus.Size = UDim2.new(0.48, 0, 0, 32)
+SkyPlus.Position = UDim2.new(0, 0, 0, 225)
+SkyPlus.BackgroundColor3 = Color3.fromRGB(50, 170, 70)
+SkyPlus.Text = "+ Crush Down"
+SkyPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
+SkyPlus.TextSize = 13
+SkyPlus.Font = Enum.Font.GothamBold
+SkyPlus.Parent = Content
+
+local SkyMinus = Instance.new("TextButton")
+SkyMinus.Size = UDim2.new(0.48, 0, 0, 32)
+SkyMinus.Position = UDim2.new(0.52, 0, 0, 225)
+SkyMinus.BackgroundColor3 = Color3.fromRGB(190, 70, 50)
+SkyMinus.Text = "- Less"
+SkyMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
+SkyMinus.TextSize = 13
+SkyMinus.Font = Enum.Font.GothamBold
+SkyMinus.Parent = Content
+
+local DeleteSkyBtn = Instance.new("TextButton")
+DeleteSkyBtn.Size = UDim2.new(1, 0, 0, 36)
+DeleteSkyBtn.Position = UDim2.new(0, 0, 0, 267)
+DeleteSkyBtn.BackgroundColor3 = Color3.fromRGB(200, 40, 40)
+DeleteSkyBtn.Text = "Delete Sky Block"
+DeleteSkyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeleteSkyBtn.TextSize = 14
+DeleteSkyBtn.Font = Enum.Font.GothamBold
+DeleteSkyBtn.Parent = Content
+
+local DeleteCorner = Instance.new("UICorner")
+DeleteCorner.CornerRadius = UDim.new(0, 8)
+DeleteCorner.Parent = DeleteSkyBtn
 
 -- Status
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(1, 0, 0, 20)
-StatusLabel.Position = UDim2.new(0, 0, 0, 185)
+StatusLabel.Position = UDim2.new(0, 0, 0, 315)
 StatusLabel.BackgroundTransparency = 1
 StatusLabel.Text = ""
 StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
 StatusLabel.TextSize = 12
 StatusLabel.Font = Enum.Font.Gotham
-StatusLabel.Parent = ContentFrame
+StatusLabel.Parent = Content
 
--- Minimize / Maximize
+-- Corners for small buttons
+for _, btn in pairs({FloorPlus, FloorMinus, SkyPlus, SkyMinus}) do
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 6)
+	c.Parent = btn
+end
+
+-- Minimize
 local isMinimized = false
 local originalSize = MainFrame.Size
 
 MinimizeBtn.MouseButton1Click:Connect(function()
 	isMinimized = not isMinimized
 	if isMinimized then
-		ContentFrame.Visible = false
-		MainFrame.Size = UDim2.new(0, 280, 0, 32)
+		Content.Visible = false
+		MainFrame.Size = UDim2.new(0, 300, 0, 32)
 		MinimizeBtn.Text = "+"
 	else
-		ContentFrame.Visible = true
+		Content.Visible = true
 		MainFrame.Size = originalSize
 		MinimizeBtn.Text = "−"
 	end
 end)
 
--- Spawn Platform
-local function spawnPlatform()
-	if spawnedPart then
-		spawnedPart:Destroy()
-	end
+-- ========== FUNCTIONS ==========
+
+-- Spawn super wide floor
+local function spawnFloor()
+	if floorPart then floorPart:Destroy() end
 
 	local hrp = HumanoidRootPart
 	if not hrp then return end
 
 	local part = Instance.new("Part")
-	part.Name = "SpawnedPlatform"
-	part.Size = Vector3.new(30, currentThickness, 30) -- wide + thick
-	part.Position = hrp.Position - Vector3.new(0, 30 + (currentThickness / 2), 0)
+	part.Name = "SuperFloor"
+	part.Size = Vector3.new(200, floorThickness, 200) -- SUPER WIDE
+	part.Position = hrp.Position - Vector3.new(0, 30 + (floorThickness / 2), 0)
 	part.Anchored = true
 	part.CanCollide = true
 	part.Material = Enum.Material.SmoothPlastic
-	part.Color = Color3.fromRGB(80, 80, 90)
+	part.Color = Color3.fromRGB(70, 70, 80)
 	part.Parent = workspace
 
-	spawnedPart = part
-	StatusLabel.Text = "Platform spawned"
+	floorPart = part
+	StatusLabel.Text = "Floor spawned (200x200)"
 	StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
 end
 
--- Update thickness
-local function updateThickness(amount)
-	currentThickness = math.clamp(currentThickness + amount, 1, 50)
-	ThicknessLabel.Text = "Thickness: " .. currentThickness
+-- Spawn sky crush block
+local function spawnSky()
+	if skyPart then skyPart:Destroy() end
 
-	if spawnedPart and spawnedPart.Parent then
-		local oldSize = spawnedPart.Size
-		local oldPos = spawnedPart.Position
-		spawnedPart.Size = Vector3.new(30, currentThickness, 30)
-		-- Keep the top of the part in the same place when resizing
-		spawnedPart.Position = Vector3.new(oldPos.X, oldPos.Y + (currentThickness - oldSize.Y) / 2, oldPos.Z)
-	end
-end
-
--- Make part above see-through + walkable through
-local function makeAboveSeeThrough()
 	local hrp = HumanoidRootPart
 	if not hrp then return end
 
-	local origin = hrp.Position
-	local direction = Vector3.new(0, 50, 0) -- look upward
+	local part = Instance.new("Part")
+	part.Name = "SkyCrush"
+	part.Size = Vector3.new(200, skyThickness, 200) -- SUPER WIDE
+	part.Position = hrp.Position + Vector3.new(0, 25 + (skyThickness / 2), 0)
+	part.Anchored = true
+	part.CanCollide = true
+	part.Material = Enum.Material.SmoothPlastic
+	part.Color = Color3.fromRGB(120, 40, 160)
+	part.Parent = workspace
 
-	local rayParams = RaycastParams.new()
-	rayParams.FilterDescendantsInstances = {Character}
-	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	skyPart = part
+	StatusLabel.Text = "Sky crush block spawned"
+	StatusLabel.TextColor3 = Color3.fromRGB(200, 100, 255)
+end
 
-	local result = workspace:Raycast(origin, direction, rayParams)
+-- Floor thickness (grows both ways / keeps center)
+local function changeFloorThickness(amount)
+	floorThickness = math.clamp(floorThickness + amount, 1, 80)
+	FloorThickLabel.Text = "Floor Thickness: " .. floorThickness
 
-	if result and result.Instance and result.Instance:IsA("BasePart") then
-		local part = result.Instance
-		part.Transparency = 0.5
-		part.CanCollide = false
-		StatusLabel.Text = "Made " .. part.Name .. " see-through"
-		StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
-	else
-		StatusLabel.Text = "No part found above you"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+	if floorPart and floorPart.Parent then
+		local oldSize = floorPart.Size
+		floorPart.Size = Vector3.new(200, floorThickness, 200)
+		-- Keep top surface in place
+		floorPart.Position = floorPart.Position + Vector3.new(0, (floorThickness - oldSize.Y) / 2, 0)
+	end
+end
+
+-- Sky thickness (grows DOWNWARD only = crush effect)
+local function changeSkyThickness(amount)
+	skyThickness = math.clamp(skyThickness + amount, 1, 100)
+	SkyThickLabel.Text = "Sky Thickness: " .. skyThickness
+
+	if skyPart and skyPart.Parent then
+		local oldSize = skyPart.Size
+		local topY = skyPart.Position.Y + (oldSize.Y / 2) -- keep the top fixed
+		skyPart.Size = Vector3.new(200, skyThickness, 200)
+		skyPart.Position = Vector3.new(skyPart.Position.X, topY - (skyThickness / 2), skyPart.Position.Z)
+	end
+end
+
+local function deleteSky()
+	if skyPart then
+		skyPart:Destroy()
+		skyPart = nil
+		StatusLabel.Text = "Sky block deleted"
+		StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 	end
 end
 
 -- Buttons
-SpawnBtn.MouseButton1Click:Connect(spawnPlatform)
-IncreaseBtn.MouseButton1Click:Connect(function()
-	updateThickness(1)
-end)
-DecreaseBtn.MouseButton1Click:Connect(function()
-	updateThickness(-1)
-end)
-NoclipBtn.MouseButton1Click:Connect(makeAboveSeeThrough)
+SpawnFloorBtn.MouseButton1Click:Connect(spawnFloor)
+FloorPlus.MouseButton1Click:Connect(function() changeFloorThickness(2) end)
+FloorMinus.MouseButton1Click:Connect(function() changeFloorThickness(-2) end)
 
--- Keep character reference updated
+SpawnSkyBtn.MouseButton1Click:Connect(spawnSky)
+SkyPlus.MouseButton1Click:Connect(function() changeSkyThickness(3) end) -- bigger steps for crush
+SkyMinus.MouseButton1Click:Connect(function() changeSkyThickness(-3) end)
+DeleteSkyBtn.MouseButton1Click:Connect(deleteSky)
+
+-- Character respawn support
 LocalPlayer.CharacterAdded:Connect(function(newChar)
 	Character = newChar
 	HumanoidRootPart = newChar:WaitForChild("HumanoidRootPart")
