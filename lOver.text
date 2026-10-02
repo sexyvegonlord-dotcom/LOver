@@ -14,7 +14,10 @@ local floorPart = nil
 local skyPart = nil
 local floorThickness = 6
 local skyThickness = 8
-local affectedParts = {} -- stores all parts we changed
+local affectedParts = {}
+
+local SKY_WIDTH = 2048
+local SKY_LENGTH = 2048
 
 -- GUI
 local ScreenGui = Instance.new("ScreenGui")
@@ -81,6 +84,7 @@ Content.BackgroundTransparency = 1
 Content.Parent = MainFrame
 
 -- ========== FLOOR SECTION ==========
+
 local FloorTitle = Instance.new("TextLabel")
 FloorTitle.Size = UDim2.new(1, 0, 0, 18)
 FloorTitle.Position = UDim2.new(0, 0, 0, 0)
@@ -132,6 +136,7 @@ FloorMinus.Font = Enum.Font.GothamBold
 FloorMinus.Parent = Content
 
 -- ========== SKY SECTION ==========
+
 local SkyTitle = Instance.new("TextLabel")
 SkyTitle.Size = UDim2.new(1, 0, 0, 18)
 SkyTitle.Position = UDim2.new(0, 0, 0, 125)
@@ -193,6 +198,7 @@ DeleteSkyBtn.Font = Enum.Font.GothamBold
 DeleteSkyBtn.Parent = Content
 
 -- ========== ABOVE PARTS SECTION ==========
+
 local AboveTitle = Instance.new("TextLabel")
 AboveTitle.Size = UDim2.new(1, 0, 0, 18)
 AboveTitle.Position = UDim2.new(0, 0, 0, 290)
@@ -224,6 +230,7 @@ UndoSeeThroughBtn.Font = Enum.Font.GothamBold
 UndoSeeThroughBtn.Parent = Content
 
 -- ========== TOOL BIG SECTION ==========
+
 local ToolTitle = Instance.new("TextLabel")
 ToolTitle.Size = UDim2.new(1, 0, 0, 18)
 ToolTitle.Position = UDim2.new(0, 0, 0, 395)
@@ -245,6 +252,7 @@ ToolBigBtn.Font = Enum.Font.GothamBold
 ToolBigBtn.Parent = Content
 
 -- ========== CHARACTER HITBOX SECTION ==========
+
 local CharTitle = Instance.new("TextLabel")
 CharTitle.Size = UDim2.new(1, 0, 0, 18)
 CharTitle.Position = UDim2.new(0, 0, 0, 465)
@@ -290,11 +298,24 @@ StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.Parent = Content
 
 -- Corners
-for _, btn in pairs({SpawnFloorBtn, FloorPlus, FloorMinus, SpawnSkyBtn, SkyPlus, SkyMinus, DeleteSkyBtn, MakeSeeThroughBtn, UndoSeeThroughBtn, ToolBigBtn, CharHitboxBtn}) do
+for _, btn in pairs({
+	SpawnFloorBtn,
+	FloorPlus,
+	FloorMinus,
+	SpawnSkyBtn,
+	SkyPlus,
+	SkyMinus,
+	DeleteSkyBtn,
+	MakeSeeThroughBtn,
+	UndoSeeThroughBtn,
+	ToolBigBtn,
+	CharHitboxBtn
+}) do
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, 7)
 	c.Parent = btn
 end
+
 local nameCorner = Instance.new("UICorner")
 nameCorner.CornerRadius = UDim.new(0, 7)
 nameCorner.Parent = NameBox
@@ -305,6 +326,7 @@ local originalSize = MainFrame.Size
 
 MinimizeBtn.MouseButton1Click:Connect(function()
 	isMinimized = not isMinimized
+
 	if isMinimized then
 		Content.Visible = false
 		MainFrame.Size = UDim2.new(0, 310, 0, 32)
@@ -319,7 +341,10 @@ end)
 -- ========== FUNCTIONS ==========
 
 local function spawnFloor()
-	if floorPart then floorPart:Destroy() end
+	if floorPart then
+		floorPart:Destroy()
+	end
+
 	local hrp = HumanoidRootPart
 	if not hrp then return end
 
@@ -334,19 +359,35 @@ local function spawnFloor()
 	part.Parent = workspace
 
 	floorPart = part
+
 	StatusLabel.Text = "Floor spawned (1000x1000)"
 	StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
 end
 
 local function spawnSky()
-	if skyPart then skyPart:Destroy() end
+	if skyPart then
+		skyPart:Destroy()
+	end
+
 	local hrp = HumanoidRootPart
 	if not hrp then return end
 
 	local part = Instance.new("Part")
 	part.Name = "SkyCrush"
-	part.Size = Vector3.new(2048, skyThickness, 2048)
-	part.Position = hrp.Position + Vector3.new(0, 25 + (skyThickness / 2), 0)
+
+	-- ALWAYS stays 2048 x 2048 horizontally
+	part.Size = Vector3.new(
+		SKY_WIDTH,
+		skyThickness,
+		SKY_LENGTH
+	)
+
+	part.Position = hrp.Position + Vector3.new(
+		0,
+		25 + (skyThickness / 2),
+		0
+	)
+
 	part.Anchored = true
 	part.CanCollide = true
 	part.Material = Enum.Material.SmoothPlastic
@@ -354,28 +395,71 @@ local function spawnSky()
 	part.Parent = workspace
 
 	skyPart = part
+
 	StatusLabel.Text = "Sky crush block spawned (2048x2048)"
 	StatusLabel.TextColor3 = Color3.fromRGB(200, 100, 255)
 end
 
 local function changeFloorThickness(amount)
-	floorThickness = math.clamp(floorThickness + amount, 1, 80)
+	floorThickness = math.clamp(
+		floorThickness + amount,
+		1,
+		80
+	)
+
 	FloorThickLabel.Text = "Floor Thickness: " .. floorThickness
+
 	if floorPart and floorPart.Parent then
 		local oldSize = floorPart.Size
-		floorPart.Size = Vector3.new(1000, floorThickness, 1000)
-		floorPart.Position = floorPart.Position + Vector3.new(0, (floorThickness - oldSize.Y) / 2, 0)
+
+		floorPart.Size = Vector3.new(
+			1000,
+			floorThickness,
+			1000
+		)
+
+		-- Keep top surface in the same place
+		floorPart.Position =
+			floorPart.Position
+			+ Vector3.new(
+				0,
+				(floorThickness - oldSize.Y) / 2,
+				0
+			)
 	end
 end
 
 local function changeSkyThickness(amount)
-	skyThickness = math.clamp(skyThickness + amount, 1, 100)
+	skyThickness = math.clamp(
+		skyThickness + amount,
+		1,
+		100
+	)
+
 	SkyThickLabel.Text = "Sky Thickness: " .. skyThickness
+
 	if skyPart and skyPart.Parent then
 		local oldSize = skyPart.Size
-		local topY = skyPart.Position.Y + (oldSize.Y / 2)
-		skyPart.Size = Vector3.new(200, skyThickness, 200)
-		skyPart.Position = Vector3.new(skyPart.Position.X, topY - (skyThickness / 2), skyPart.Position.Z)
+
+		-- Keep the top surface in the same place
+		local topY =
+			skyPart.Position.Y
+			+ (oldSize.Y / 2)
+
+		-- IMPORTANT:
+		-- Never reset X/Z to 200.
+		-- They stay 2048 x 2048.
+		skyPart.Size = Vector3.new(
+			SKY_WIDTH,
+			skyThickness,
+			SKY_LENGTH
+		)
+
+		skyPart.Position = Vector3.new(
+			skyPart.Position.X,
+			topY - (skyThickness / 2),
+			skyPart.Position.Z
+		)
 	end
 end
 
@@ -383,6 +467,7 @@ local function deleteSky()
 	if skyPart then
 		skyPart:Destroy()
 		skyPart = nil
+
 		StatusLabel.Text = "Sky block deleted"
 		StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 	end
@@ -391,11 +476,12 @@ end
 -- Make ALL parts above see-through + no collide
 local function makeAboveSeeThrough()
 	affectedParts = {}
+
 	local hrp = HumanoidRootPart
 	if not hrp then return end
 
 	local origin = hrp.Position
-	local direction = Vector3.new(0, 200, 0) -- long upward ray
+	local direction = Vector3.new(0, 200, 0)
 	local filterList = {Character}
 
 	while true do
@@ -403,28 +489,40 @@ local function makeAboveSeeThrough()
 		rayParams.FilterDescendantsInstances = filterList
 		rayParams.FilterType = Enum.RaycastFilterType.Exclude
 
-		local result = workspace:Raycast(origin, direction, rayParams)
+		local result = workspace:Raycast(
+			origin,
+			direction,
+			rayParams
+		)
+
 		if result and result.Instance and result.Instance:IsA("BasePart") then
 			local part = result.Instance
+
 			table.insert(affectedParts, {
 				Part = part,
 				OriginalTransparency = part.Transparency,
 				OriginalCanCollide = part.CanCollide
 			})
+
 			part.Transparency = 0.5
 			part.CanCollide = false
-			table.insert(filterList, part) -- ignore this part on next ray
+
+			table.insert(filterList, part)
 		else
-			break -- no more parts above
+			break
 		end
 	end
 
 	if #affectedParts > 0 then
-		StatusLabel.Text = "Made " .. #affectedParts .. " part(s) see-through"
-		StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
+		StatusLabel.Text =
+			"Made " .. #affectedParts .. " part(s) see-through"
+
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(0, 200, 100)
 	else
 		StatusLabel.Text = "No parts found above you"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 80, 80)
 	end
 end
 
@@ -432,51 +530,80 @@ end
 local function undoSeeThrough()
 	for _, data in pairs(affectedParts) do
 		if data.Part and data.Part.Parent then
-			data.Part.Transparency = data.OriginalTransparency
-			data.Part.CanCollide = data.OriginalCanCollide
+			data.Part.Transparency =
+				data.OriginalTransparency
+
+			data.Part.CanCollide =
+				data.OriginalCanCollide
 		end
 	end
+
 	affectedParts = {}
+
 	StatusLabel.Text = "All parts restored"
-	StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
+	StatusLabel.TextColor3 =
+		Color3.fromRGB(180, 180, 190)
 end
 
 -- Tool Big
 local function toolBig()
 	local char = LocalPlayer.Character
+
 	if not char then return end
+
 	local tool = char:FindFirstChildOfClass("Tool")
+
 	if not tool then
 		StatusLabel.Text = "You are not holding a tool"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 80, 80)
 		return
 	end
 
-	local hitbox = tool:FindFirstChild("Hitbox") or tool:FindFirstChild("Handle") or tool:FindFirstChildWhichIsA("BasePart")
+	local hitbox =
+		tool:FindFirstChild("Hitbox")
+		or tool:FindFirstChild("Handle")
+		or tool:FindFirstChildWhichIsA("BasePart")
+
 	if hitbox and hitbox:IsA("BasePart") then
 		hitbox.Size = Vector3.new(15, 15, 15)
 		hitbox.Transparency = 0.5
-		StatusLabel.Text = "Tool hitbox made big (15x15x15)"
-		StatusLabel.TextColor3 = Color3.fromRGB(0, 220, 150)
+
+		StatusLabel.Text =
+			"Tool hitbox made big (15x15x15)"
+
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(0, 220, 150)
 	else
-		StatusLabel.Text = "No hitbox/handle found in tool"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		StatusLabel.Text =
+			"No hitbox/handle found in tool"
+
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 80, 80)
 	end
 end
 
 -- Character Hitbox
 local function charHitbox()
 	local name = NameBox.Text
+
 	if name == "" then
 		StatusLabel.Text = "Enter a player name"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 80, 80)
 		return
 	end
 
 	local target = nil
 	name = string.lower(name)
+
 	for _, plr in pairs(Players:GetPlayers()) do
-		if string.find(string.lower(plr.Name), name, 1, true) then
+		if string.find(
+			string.lower(plr.Name),
+			name,
+			1,
+			true
+		) then
 			target = plr
 			break
 		end
@@ -484,40 +611,72 @@ local function charHitbox()
 
 	if not target or not target.Character then
 		StatusLabel.Text = "Player not found"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 80, 80)
 		return
 	end
 
-	local hrp = target.Character:FindFirstChild("HumanoidRootPart")
+	local hrp =
+		target.Character:FindFirstChild("HumanoidRootPart")
+
 	if hrp then
 		hrp.Size = Vector3.new(15, 15, 15)
 		hrp.Transparency = 0.5
-		StatusLabel.Text = target.Name .. " HRP made big"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+
+		StatusLabel.Text =
+			target.Name .. " HRP made big"
+
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 100, 100)
 	else
-		StatusLabel.Text = "No HumanoidRootPart found"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+		StatusLabel.Text =
+			"No HumanoidRootPart found"
+
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 80, 80)
 	end
 end
 
--- Connect buttons
+-- ========== CONNECT BUTTONS ==========
+
 SpawnFloorBtn.MouseButton1Click:Connect(spawnFloor)
-FloorPlus.MouseButton1Click:Connect(function() changeFloorThickness(1) end)   -- 1 stud
-FloorMinus.MouseButton1Click:Connect(function() changeFloorThickness(-1) end) -- 1 stud
+
+FloorPlus.MouseButton1Click:Connect(function()
+	changeFloorThickness(1)
+end)
+
+FloorMinus.MouseButton1Click:Connect(function()
+	changeFloorThickness(-1)
+end)
 
 SpawnSkyBtn.MouseButton1Click:Connect(spawnSky)
-SkyPlus.MouseButton1Click:Connect(function() changeSkyThickness(1) end)   -- 1 stud
-SkyMinus.MouseButton1Click:Connect(function() changeSkyThickness(-1) end) -- 1 stud
+
+SkyPlus.MouseButton1Click:Connect(function()
+	changeSkyThickness(1)
+end)
+
+SkyMinus.MouseButton1Click:Connect(function()
+	changeSkyThickness(-1)
+end)
+
 DeleteSkyBtn.MouseButton1Click:Connect(deleteSky)
 
-MakeSeeThroughBtn.MouseButton1Click:Connect(makeAboveSeeThrough)
-UndoSeeThroughBtn.MouseButton1Click:Connect(undoSeeThrough)
+MakeSeeThroughBtn.MouseButton1Click:Connect(
+	makeAboveSeeThrough
+)
+
+UndoSeeThroughBtn.MouseButton1Click:Connect(
+	undoSeeThrough
+)
 
 ToolBigBtn.MouseButton1Click:Connect(toolBig)
+
 CharHitboxBtn.MouseButton1Click:Connect(charHitbox)
 
--- Character respawn
+-- ========== CHARACTER RESPAWN ==========
+
 LocalPlayer.CharacterAdded:Connect(function(newChar)
 	Character = newChar
-	HumanoidRootPart = newChar:WaitForChild("HumanoidRootPart")
+	HumanoidRootPart =
+		newChar:WaitForChild("HumanoidRootPart")
 end)
