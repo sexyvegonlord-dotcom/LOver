@@ -1,10 +1,13 @@
+```lua
 -- Platform + Sky + Tools GUI (Personal Use)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- Remove old GUI
 local oldGui = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("PlatformGUI")
-if oldGui then oldGui:Destroy() end
+if oldGui then
+	oldGui:Destroy()
+end
 
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
@@ -12,14 +15,23 @@ local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 -- Variables
 local floorPart = nil
 local skyPart = nil
+
 local floorThickness = 6
 local skyThickness = 8
+
 local affectedParts = {}
 
+-- =========================================================
+-- FIXED SKY DIMENSIONS
+-- X and Z NEVER change when using Crush Down / Less
+-- =========================================================
 local SKY_WIDTH = 2048
 local SKY_LENGTH = 2048
 
+-- =========================================================
 -- GUI
+-- =========================================================
+
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "PlatformGUI"
 ScreenGui.ResetOnSpawn = false
@@ -40,7 +52,10 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = MainFrame
 
--- Title Bar
+-- =========================================================
+-- TITLE BAR
+-- =========================================================
+
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 32)
 TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -76,14 +91,19 @@ local MinCorner = Instance.new("UICorner")
 MinCorner.CornerRadius = UDim.new(0, 6)
 MinCorner.Parent = MinimizeBtn
 
--- Content
+-- =========================================================
+-- CONTENT
+-- =========================================================
+
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, -20, 1, -48)
 Content.Position = UDim2.new(0, 10, 0, 40)
 Content.BackgroundTransparency = 1
 Content.Parent = MainFrame
 
--- ========== FLOOR SECTION ==========
+-- =========================================================
+-- FLOOR SECTION
+-- =========================================================
 
 local FloorTitle = Instance.new("TextLabel")
 FloorTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -135,7 +155,9 @@ FloorMinus.TextSize = 13
 FloorMinus.Font = Enum.Font.GothamBold
 FloorMinus.Parent = Content
 
--- ========== SKY SECTION ==========
+-- =========================================================
+-- SKY SECTION
+-- =========================================================
 
 local SkyTitle = Instance.new("TextLabel")
 SkyTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -197,7 +219,9 @@ DeleteSkyBtn.TextSize = 13
 DeleteSkyBtn.Font = Enum.Font.GothamBold
 DeleteSkyBtn.Parent = Content
 
--- ========== ABOVE PARTS SECTION ==========
+-- =========================================================
+-- ABOVE PARTS SECTION
+-- =========================================================
 
 local AboveTitle = Instance.new("TextLabel")
 AboveTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -229,7 +253,9 @@ UndoSeeThroughBtn.TextSize = 13
 UndoSeeThroughBtn.Font = Enum.Font.GothamBold
 UndoSeeThroughBtn.Parent = Content
 
--- ========== TOOL BIG SECTION ==========
+-- =========================================================
+-- TOOL BIG
+-- =========================================================
 
 local ToolTitle = Instance.new("TextLabel")
 ToolTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -251,7 +277,9 @@ ToolBigBtn.TextSize = 12
 ToolBigBtn.Font = Enum.Font.GothamBold
 ToolBigBtn.Parent = Content
 
--- ========== CHARACTER HITBOX SECTION ==========
+-- =========================================================
+-- CHARACTER HITBOX
+-- =========================================================
 
 local CharTitle = Instance.new("TextLabel")
 CharTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -286,7 +314,10 @@ CharHitboxBtn.TextSize = 13
 CharHitboxBtn.Font = Enum.Font.GothamBold
 CharHitboxBtn.Parent = Content
 
--- Status
+-- =========================================================
+-- STATUS
+-- =========================================================
+
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(1, 0, 0, 18)
 StatusLabel.Position = UDim2.new(0, 0, 0, 565)
@@ -297,7 +328,10 @@ StatusLabel.TextSize = 12
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.Parent = Content
 
--- Corners
+-- =========================================================
+-- CORNERS
+-- =========================================================
+
 for _, btn in pairs({
 	SpawnFloorBtn,
 	FloorPlus,
@@ -320,7 +354,10 @@ local nameCorner = Instance.new("UICorner")
 nameCorner.CornerRadius = UDim.new(0, 7)
 nameCorner.Parent = NameBox
 
--- Minimize
+-- =========================================================
+-- MINIMIZE
+-- =========================================================
+
 local isMinimized = false
 local originalSize = MainFrame.Size
 
@@ -338,7 +375,9 @@ MinimizeBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- ========== FUNCTIONS ==========
+-- =========================================================
+-- FLOOR
+-- =========================================================
 
 local function spawnFloor()
 	if floorPart then
@@ -346,12 +385,25 @@ local function spawnFloor()
 	end
 
 	local hrp = HumanoidRootPart
-	if not hrp then return end
+	if not hrp then
+		return
+	end
 
 	local part = Instance.new("Part")
 	part.Name = "SuperFloor"
-	part.Size = Vector3.new(1000, floorThickness, 1000)
-	part.Position = hrp.Position - Vector3.new(0, 30 + (floorThickness / 2), 0)
+
+	part.Size = Vector3.new(
+		1000,
+		floorThickness,
+		1000
+	)
+
+	part.Position = hrp.Position - Vector3.new(
+		0,
+		30 + (floorThickness / 2),
+		0
+	)
+
 	part.Anchored = true
 	part.CanCollide = true
 	part.Material = Enum.Material.SmoothPlastic
@@ -364,18 +416,58 @@ local function spawnFloor()
 	StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
 end
 
+local function changeFloorThickness(amount)
+	floorThickness = math.clamp(
+		floorThickness + amount,
+		1,
+		80
+	)
+
+	FloorThickLabel.Text =
+		"Floor Thickness: " .. floorThickness
+
+	if floorPart and floorPart.Parent then
+		local oldSize = floorPart.Size
+
+		floorPart.Size = Vector3.new(
+			1000,
+			floorThickness,
+			1000
+		)
+
+		-- Keep top surface in same place
+		floorPart.Position =
+			floorPart.Position +
+			Vector3.new(
+				0,
+				(floorThickness - oldSize.Y) / 2,
+				0
+			)
+	end
+end
+
+-- =========================================================
+-- SKY
+-- =========================================================
+
 local function spawnSky()
 	if skyPart then
 		skyPart:Destroy()
 	end
 
 	local hrp = HumanoidRootPart
-	if not hrp then return end
+
+	if not hrp then
+		return
+	end
 
 	local part = Instance.new("Part")
 	part.Name = "SkyCrush"
 
-	-- ALWAYS stays 2048 x 2048 horizontally
+	-- FIXED:
+	-- X = 2048
+	-- Y = skyThickness
+	-- Z = 2048
 	part.Size = Vector3.new(
 		SKY_WIDTH,
 		skyThickness,
@@ -396,71 +488,77 @@ local function spawnSky()
 
 	skyPart = part
 
-	StatusLabel.Text = "Sky crush block spawned (2048x2048)"
-	StatusLabel.TextColor3 = Color3.fromRGB(200, 100, 255)
+	StatusLabel.Text =
+		"Sky crush block spawned (2048x2048)"
+
+	StatusLabel.TextColor3 =
+		Color3.fromRGB(200, 100, 255)
 end
 
-local function changeFloorThickness(amount)
-	floorThickness = math.clamp(
-		floorThickness + amount,
-		1,
-		80
-	)
-
-	FloorThickLabel.Text = "Floor Thickness: " .. floorThickness
-
-	if floorPart and floorPart.Parent then
-		local oldSize = floorPart.Size
-
-		floorPart.Size = Vector3.new(
-			1000,
-			floorThickness,
-			1000
-		)
-
-		-- Keep top surface in the same place
-		floorPart.Position =
-			floorPart.Position
-			+ Vector3.new(
-				0,
-				(floorThickness - oldSize.Y) / 2,
-				0
-			)
-	end
-end
+-- =========================================================
+-- SKY THICKNESS
+-- IMPORTANT:
+-- ONLY Y CHANGES
+-- X AND Z STAY 2048
+-- =========================================================
 
 local function changeSkyThickness(amount)
-	skyThickness = math.clamp(
-		skyThickness + amount,
+
+	if not skyPart or not skyPart.Parent then
+		skyThickness = math.clamp(
+			skyThickness + amount,
+			1,
+			100
+		)
+
+		SkyThickLabel.Text =
+			"Sky Thickness: " .. skyThickness
+
+		return
+	end
+
+	-- Read current size
+	local currentSize = skyPart.Size
+
+	-- Calculate ONLY the new Y thickness
+	local newThickness = math.clamp(
+		currentSize.Y + amount,
 		1,
 		100
 	)
 
-	SkyThickLabel.Text = "Sky Thickness: " .. skyThickness
+	-- Save current top surface
+	local topY =
+		skyPart.Position.Y +
+		(currentSize.Y / 2)
 
-	if skyPart and skyPart.Parent then
-		local oldSize = skyPart.Size
+	-- =====================================================
+	-- THE IMPORTANT FIX:
+	--
+	-- X = currentSize.X
+	-- Y = newThickness
+	-- Z = currentSize.Z
+	--
+	-- Therefore Crush Down / Less CANNOT change width.
+	-- =====================================================
 
-		-- Keep the top surface in the same place
-		local topY =
-			skyPart.Position.Y
-			+ (oldSize.Y / 2)
+	skyPart.Size = Vector3.new(
+		currentSize.X,
+		newThickness,
+		currentSize.Z
+	)
 
-		-- IMPORTANT:
-		-- Never reset X/Z to 200.
-		-- They stay 2048 x 2048.
-		skyPart.Size = Vector3.new(
-			SKY_WIDTH,
-			skyThickness,
-			SKY_LENGTH
-		)
+	-- Keep the TOP of the sky block fixed
+	skyPart.Position = Vector3.new(
+		skyPart.Position.X,
+		topY - (newThickness / 2),
+		skyPart.Position.Z
+	)
 
-		skyPart.Position = Vector3.new(
-			skyPart.Position.X,
-			topY - (skyThickness / 2),
-			skyPart.Position.Z
-		)
-	end
+	skyThickness = newThickness
+
+	SkyThickLabel.Text =
+		"Sky Thickness: " .. skyThickness
 end
 
 local function deleteSky()
@@ -468,68 +566,113 @@ local function deleteSky()
 		skyPart:Destroy()
 		skyPart = nil
 
-		StatusLabel.Text = "Sky block deleted"
-		StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+		StatusLabel.Text =
+			"Sky block deleted"
+
+		StatusLabel.TextColor3 =
+			Color3.fromRGB(255, 100, 100)
 	end
 end
 
--- Make ALL parts above see-through + no collide
+-- =========================================================
+-- MAKE ABOVE PARTS SEE-THROUGH
+-- =========================================================
+
 local function makeAboveSeeThrough()
+
 	affectedParts = {}
 
 	local hrp = HumanoidRootPart
-	if not hrp then return end
+
+	if not hrp then
+		return
+	end
 
 	local origin = hrp.Position
 	local direction = Vector3.new(0, 200, 0)
-	local filterList = {Character}
+
+	local filterList = {
+		Character
+	}
 
 	while true do
+
 		local rayParams = RaycastParams.new()
-		rayParams.FilterDescendantsInstances = filterList
-		rayParams.FilterType = Enum.RaycastFilterType.Exclude
 
-		local result = workspace:Raycast(
-			origin,
-			direction,
-			rayParams
-		)
+		rayParams.FilterDescendantsInstances =
+			filterList
 
-		if result and result.Instance and result.Instance:IsA("BasePart") then
+		rayParams.FilterType =
+			Enum.RaycastFilterType.Exclude
+
+		local result =
+			workspace:Raycast(
+				origin,
+				direction,
+				rayParams
+			)
+
+		if result
+			and result.Instance
+			and result.Instance:IsA("BasePart") then
+
 			local part = result.Instance
 
-			table.insert(affectedParts, {
-				Part = part,
-				OriginalTransparency = part.Transparency,
-				OriginalCanCollide = part.CanCollide
-			})
+			table.insert(
+				affectedParts,
+				{
+					Part = part,
+					OriginalTransparency =
+						part.Transparency,
+					OriginalCanCollide =
+						part.CanCollide
+				}
+			)
 
 			part.Transparency = 0.5
 			part.CanCollide = false
 
-			table.insert(filterList, part)
+			table.insert(
+				filterList,
+				part
+			)
+
 		else
 			break
 		end
 	end
 
 	if #affectedParts > 0 then
+
 		StatusLabel.Text =
-			"Made " .. #affectedParts .. " part(s) see-through"
+			"Made " ..
+			#affectedParts ..
+			" part(s) see-through"
 
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(0, 200, 100)
+
 	else
-		StatusLabel.Text = "No parts found above you"
+
+		StatusLabel.Text =
+			"No parts found above you"
+
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(255, 80, 80)
 	end
 end
 
--- Undo ALL
+-- =========================================================
+-- UNDO SEE-THROUGH
+-- =========================================================
+
 local function undoSeeThrough()
+
 	for _, data in pairs(affectedParts) do
-		if data.Part and data.Part.Parent then
+
+		if data.Part
+			and data.Part.Parent then
+
 			data.Part.Transparency =
 				data.OriginalTransparency
 
@@ -540,23 +683,36 @@ local function undoSeeThrough()
 
 	affectedParts = {}
 
-	StatusLabel.Text = "All parts restored"
+	StatusLabel.Text =
+		"All parts restored"
+
 	StatusLabel.TextColor3 =
 		Color3.fromRGB(180, 180, 190)
 end
 
--- Tool Big
+-- =========================================================
+-- TOOL BIG
+-- =========================================================
+
 local function toolBig()
+
 	local char = LocalPlayer.Character
 
-	if not char then return end
+	if not char then
+		return
+	end
 
-	local tool = char:FindFirstChildOfClass("Tool")
+	local tool =
+		char:FindFirstChildOfClass("Tool")
 
 	if not tool then
-		StatusLabel.Text = "You are not holding a tool"
+
+		StatusLabel.Text =
+			"You are not holding a tool"
+
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(255, 80, 80)
+
 		return
 	end
 
@@ -565,8 +721,16 @@ local function toolBig()
 		or tool:FindFirstChild("Handle")
 		or tool:FindFirstChildWhichIsA("BasePart")
 
-	if hitbox and hitbox:IsA("BasePart") then
-		hitbox.Size = Vector3.new(15, 15, 15)
+	if hitbox
+		and hitbox:IsA("BasePart") then
+
+		hitbox.Size =
+			Vector3.new(
+				15,
+				15,
+				15
+			)
+
 		hitbox.Transparency = 0.5
 
 		StatusLabel.Text =
@@ -574,7 +738,9 @@ local function toolBig()
 
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(0, 220, 150)
+
 	else
+
 		StatusLabel.Text =
 			"No hitbox/handle found in tool"
 
@@ -583,83 +749,138 @@ local function toolBig()
 	end
 end
 
--- Character Hitbox
+-- =========================================================
+-- CHARACTER HITBOX
+-- =========================================================
+
 local function charHitbox()
+
 	local name = NameBox.Text
 
 	if name == "" then
-		StatusLabel.Text = "Enter a player name"
+
+		StatusLabel.Text =
+			"Enter a player name"
+
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(255, 80, 80)
+
 		return
 	end
 
 	local target = nil
+
 	name = string.lower(name)
 
-	for _, plr in pairs(Players:GetPlayers()) do
+	for _, plr in pairs(
+		Players:GetPlayers()
+	) do
+
 		if string.find(
 			string.lower(plr.Name),
 			name,
 			1,
 			true
 		) then
+
 			target = plr
 			break
 		end
 	end
 
-	if not target or not target.Character then
-		StatusLabel.Text = "Player not found"
+	if not target
+		or not target.Character then
+
+		StatusLabel.Text =
+			"Player not found"
+
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(255, 80, 80)
+
 		return
 	end
 
 	local hrp =
-		target.Character:FindFirstChild("HumanoidRootPart")
+		target.Character:
+		FindFirstChild(
+			"HumanoidRootPart"
+		)
 
 	if hrp then
-		hrp.Size = Vector3.new(15, 15, 15)
+
+		hrp.Size =
+			Vector3.new(
+				15,
+				15,
+				15
+			)
+
 		hrp.Transparency = 0.5
 
 		StatusLabel.Text =
-			target.Name .. " HRP made big"
+			target.Name ..
+			" HRP made big"
 
 		StatusLabel.TextColor3 =
-			Color3.fromRGB(255, 100, 100)
+			Color3.fromRGB(
+				255,
+				100,
+				100
+			)
+
 	else
+
 		StatusLabel.Text =
 			"No HumanoidRootPart found"
 
 		StatusLabel.TextColor3 =
-			Color3.fromRGB(255, 80, 80)
+			Color3.fromRGB(
+				255,
+				80,
+				80
+			)
 	end
 end
 
--- ========== CONNECT BUTTONS ==========
+-- =========================================================
+-- BUTTON CONNECTIONS
+-- =========================================================
 
-SpawnFloorBtn.MouseButton1Click:Connect(spawnFloor)
+SpawnFloorBtn.MouseButton1Click:Connect(
+	spawnFloor
+)
 
-FloorPlus.MouseButton1Click:Connect(function()
-	changeFloorThickness(1)
-end)
+FloorPlus.MouseButton1Click:Connect(
+	function()
+		changeFloorThickness(1)
+	end
+)
 
-FloorMinus.MouseButton1Click:Connect(function()
-	changeFloorThickness(-1)
-end)
+FloorMinus.MouseButton1Click:Connect(
+	function()
+		changeFloorThickness(-1)
+	end
+)
 
-SpawnSkyBtn.MouseButton1Click:Connect(spawnSky)
+SpawnSkyBtn.MouseButton1Click:Connect(
+	spawnSky
+)
 
-SkyPlus.MouseButton1Click:Connect(function()
-	changeSkyThickness(1)
-end)
+SkyPlus.MouseButton1Click:Connect(
+	function()
+		changeSkyThickness(1)
+	end
+)
 
-SkyMinus.MouseButton1Click:Connect(function()
-	changeSkyThickness(-1)
-end)
+SkyMinus.MouseButton1Click:Connect(
+	function()
+		changeSkyThickness(-1)
+	end
+)
 
-DeleteSkyBtn.MouseButton1Click:Connect(deleteSky)
+DeleteSkyBtn.MouseButton1Click:Connect(
+	deleteSky
+)
 
 MakeSeeThroughBtn.MouseButton1Click:Connect(
 	makeAboveSeeThrough
@@ -669,14 +890,28 @@ UndoSeeThroughBtn.MouseButton1Click:Connect(
 	undoSeeThrough
 )
 
-ToolBigBtn.MouseButton1Click:Connect(toolBig)
+ToolBigBtn.MouseButton1Click:Connect(
+	toolBig
+)
 
-CharHitboxBtn.MouseButton1Click:Connect(charHitbox)
+CharHitboxBtn.MouseButton1Click:Connect(
+	charHitbox
+)
 
--- ========== CHARACTER RESPAWN ==========
+-- =========================================================
+-- CHARACTER RESPAWN
+-- =========================================================
 
-LocalPlayer.CharacterAdded:Connect(function(newChar)
-	Character = newChar
-	HumanoidRootPart =
-		newChar:WaitForChild("HumanoidRootPart")
-end)
+LocalPlayer.CharacterAdded:Connect(
+	function(newChar)
+
+		Character = newChar
+
+		HumanoidRootPart =
+			newChar:
+			WaitForChild(
+				"HumanoidRootPart"
+			)
+	end
+)
+```
