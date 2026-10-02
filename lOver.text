@@ -1,5 +1,5 @@
-```lua
 -- Platform + Sky + Tools GUI (Personal Use)
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -12,7 +12,10 @@ end
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
--- Variables
+-- =========================================================
+-- VARIABLES
+-- =========================================================
+
 local floorPart = nil
 local skyPart = nil
 
@@ -21,12 +24,14 @@ local skyThickness = 8
 
 local affectedParts = {}
 
--- =========================================================
--- FIXED SKY DIMENSIONS
--- X and Z NEVER change when using Crush Down / Less
--- =========================================================
+-- FLOOR SIZE
+local FLOOR_WIDTH = 4096
+local FLOOR_LENGTH = 4096
+
+-- SKY SIZE
 local SKY_WIDTH = 2048
 local SKY_LENGTH = 2048
+
 
 -- =========================================================
 -- GUI
@@ -37,6 +42,11 @@ ScreenGui.Name = "PlatformGUI"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+
+-- =========================================================
+-- MAIN FRAME
+-- =========================================================
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -51,6 +61,7 @@ MainFrame.Parent = ScreenGui
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = MainFrame
+
 
 -- =========================================================
 -- TITLE BAR
@@ -91,6 +102,7 @@ local MinCorner = Instance.new("UICorner")
 MinCorner.CornerRadius = UDim.new(0, 6)
 MinCorner.Parent = MinimizeBtn
 
+
 -- =========================================================
 -- CONTENT
 -- =========================================================
@@ -100,6 +112,7 @@ Content.Size = UDim2.new(1, -20, 1, -48)
 Content.Position = UDim2.new(0, 10, 0, 40)
 Content.BackgroundTransparency = 1
 Content.Parent = MainFrame
+
 
 -- =========================================================
 -- FLOOR SECTION
@@ -119,7 +132,7 @@ local SpawnFloorBtn = Instance.new("TextButton")
 SpawnFloorBtn.Size = UDim2.new(1, 0, 0, 34)
 SpawnFloorBtn.Position = UDim2.new(0, 0, 0, 22)
 SpawnFloorBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 220)
-SpawnFloorBtn.Text = "Spawn Super Wide Floor (1000x1000)"
+SpawnFloorBtn.Text = "Spawn Super Wide Floor (4096x4096)"
 SpawnFloorBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpawnFloorBtn.TextSize = 13
 SpawnFloorBtn.Font = Enum.Font.GothamBold
@@ -154,6 +167,7 @@ FloorMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
 FloorMinus.TextSize = 13
 FloorMinus.Font = Enum.Font.GothamBold
 FloorMinus.Parent = Content
+
 
 -- =========================================================
 -- SKY SECTION
@@ -219,6 +233,7 @@ DeleteSkyBtn.TextSize = 13
 DeleteSkyBtn.Font = Enum.Font.GothamBold
 DeleteSkyBtn.Parent = Content
 
+
 -- =========================================================
 -- ABOVE PARTS SECTION
 -- =========================================================
@@ -253,8 +268,9 @@ UndoSeeThroughBtn.TextSize = 13
 UndoSeeThroughBtn.Font = Enum.Font.GothamBold
 UndoSeeThroughBtn.Parent = Content
 
+
 -- =========================================================
--- TOOL BIG
+-- TOOL BIG SECTION
 -- =========================================================
 
 local ToolTitle = Instance.new("TextLabel")
@@ -277,8 +293,9 @@ ToolBigBtn.TextSize = 12
 ToolBigBtn.Font = Enum.Font.GothamBold
 ToolBigBtn.Parent = Content
 
+
 -- =========================================================
--- CHARACTER HITBOX
+-- CHARACTER HITBOX SECTION
 -- =========================================================
 
 local CharTitle = Instance.new("TextLabel")
@@ -314,6 +331,7 @@ CharHitboxBtn.TextSize = 13
 CharHitboxBtn.Font = Enum.Font.GothamBold
 CharHitboxBtn.Parent = Content
 
+
 -- =========================================================
 -- STATUS
 -- =========================================================
@@ -327,6 +345,7 @@ StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
 StatusLabel.TextSize = 12
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.Parent = Content
+
 
 -- =========================================================
 -- CORNERS
@@ -354,6 +373,7 @@ local nameCorner = Instance.new("UICorner")
 nameCorner.CornerRadius = UDim.new(0, 7)
 nameCorner.Parent = NameBox
 
+
 -- =========================================================
 -- MINIMIZE
 -- =========================================================
@@ -375,11 +395,13 @@ MinimizeBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
+
 -- =========================================================
--- FLOOR
+-- FLOOR FUNCTIONS
 -- =========================================================
 
 local function spawnFloor()
+
 	if floorPart then
 		floorPart:Destroy()
 	end
@@ -390,19 +412,23 @@ local function spawnFloor()
 	end
 
 	local part = Instance.new("Part")
+
 	part.Name = "SuperFloor"
 
+	-- LOCKED X/Z WIDTH
 	part.Size = Vector3.new(
-		1000,
+		FLOOR_WIDTH,
 		floorThickness,
-		1000
+		FLOOR_LENGTH
 	)
 
-	part.Position = hrp.Position - Vector3.new(
-		0,
-		30 + (floorThickness / 2),
-		0
-	)
+	part.Position =
+		hrp.Position
+		- Vector3.new(
+			0,
+			30 + (floorThickness / 2),
+			0
+		)
 
 	part.Anchored = true
 	part.CanCollide = true
@@ -412,11 +438,17 @@ local function spawnFloor()
 
 	floorPart = part
 
-	StatusLabel.Text = "Floor spawned (1000x1000)"
-	StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 100)
+	StatusLabel.Text =
+		"Floor spawned (4096x4096)"
+
+	StatusLabel.TextColor3 =
+		Color3.fromRGB(0, 200, 100)
 end
 
+
 local function changeFloorThickness(amount)
+
+	-- Change ONLY thickness value
 	floorThickness = math.clamp(
 		floorThickness + amount,
 		1,
@@ -427,30 +459,37 @@ local function changeFloorThickness(amount)
 		"Floor Thickness: " .. floorThickness
 
 	if floorPart and floorPart.Parent then
-		local oldSize = floorPart.Size
 
+		local currentSize = floorPart.Size
+
+		-- Calculate current TOP surface
+		local topY =
+			floorPart.Position.Y
+			+ (currentSize.Y / 2)
+
+		-- ONLY Y changes
 		floorPart.Size = Vector3.new(
-			1000,
+			FLOOR_WIDTH,
 			floorThickness,
-			1000
+			FLOOR_LENGTH
 		)
 
-		-- Keep top surface in same place
-		floorPart.Position =
-			floorPart.Position +
-			Vector3.new(
-				0,
-				(floorThickness - oldSize.Y) / 2,
-				0
-			)
+		-- Keep top surface in EXACT same place
+		floorPart.Position = Vector3.new(
+			floorPart.Position.X,
+			topY - (floorThickness / 2),
+			floorPart.Position.Z
+		)
 	end
 end
 
+
 -- =========================================================
--- SKY
+-- SKY FUNCTIONS
 -- =========================================================
 
 local function spawnSky()
+
 	if skyPart then
 		skyPart:Destroy()
 	end
@@ -462,23 +501,23 @@ local function spawnSky()
 	end
 
 	local part = Instance.new("Part")
+
 	part.Name = "SkyCrush"
 
-	-- FIXED:
-	-- X = 2048
-	-- Y = skyThickness
-	-- Z = 2048
+	-- LOCKED X/Z
 	part.Size = Vector3.new(
 		SKY_WIDTH,
 		skyThickness,
 		SKY_LENGTH
 	)
 
-	part.Position = hrp.Position + Vector3.new(
-		0,
-		25 + (skyThickness / 2),
-		0
-	)
+	part.Position =
+		hrp.Position
+		+ Vector3.new(
+			0,
+			25 + (skyThickness / 2),
+			0
+		)
 
 	part.Anchored = true
 	part.CanCollide = true
@@ -495,16 +534,11 @@ local function spawnSky()
 		Color3.fromRGB(200, 100, 255)
 end
 
--- =========================================================
--- SKY THICKNESS
--- IMPORTANT:
--- ONLY Y CHANGES
--- X AND Z STAY 2048
--- =========================================================
 
 local function changeSkyThickness(amount)
 
 	if not skyPart or not skyPart.Parent then
+
 		skyThickness = math.clamp(
 			skyThickness + amount,
 			1,
@@ -517,38 +551,27 @@ local function changeSkyThickness(amount)
 		return
 	end
 
-	-- Read current size
 	local currentSize = skyPart.Size
 
-	-- Calculate ONLY the new Y thickness
+	-- Calculate current TOP surface
+	local topY =
+		skyPart.Position.Y
+		+ (currentSize.Y / 2)
+
+	-- Change ONLY Y
 	local newThickness = math.clamp(
 		currentSize.Y + amount,
 		1,
 		100
 	)
 
-	-- Save current top surface
-	local topY =
-		skyPart.Position.Y +
-		(currentSize.Y / 2)
-
-	-- =====================================================
-	-- THE IMPORTANT FIX:
-	--
-	-- X = currentSize.X
-	-- Y = newThickness
-	-- Z = currentSize.Z
-	--
-	-- Therefore Crush Down / Less CANNOT change width.
-	-- =====================================================
-
 	skyPart.Size = Vector3.new(
-		currentSize.X,
+		SKY_WIDTH,
 		newThickness,
-		currentSize.Z
+		SKY_LENGTH
 	)
 
-	-- Keep the TOP of the sky block fixed
+	-- Keep top surface fixed
 	skyPart.Position = Vector3.new(
 		skyPart.Position.X,
 		topY - (newThickness / 2),
@@ -561,8 +584,11 @@ local function changeSkyThickness(amount)
 		"Sky Thickness: " .. skyThickness
 end
 
+
 local function deleteSky()
+
 	if skyPart then
+
 		skyPart:Destroy()
 		skyPart = nil
 
@@ -574,8 +600,9 @@ local function deleteSky()
 	end
 end
 
+
 -- =========================================================
--- MAKE ABOVE PARTS SEE-THROUGH
+-- PARTS ABOVE YOU
 -- =========================================================
 
 local function makeAboveSeeThrough()
@@ -645,9 +672,9 @@ local function makeAboveSeeThrough()
 	if #affectedParts > 0 then
 
 		StatusLabel.Text =
-			"Made " ..
-			#affectedParts ..
-			" part(s) see-through"
+			"Made "
+			.. #affectedParts
+			.. " part(s) see-through"
 
 		StatusLabel.TextColor3 =
 			Color3.fromRGB(0, 200, 100)
@@ -662,9 +689,6 @@ local function makeAboveSeeThrough()
 	end
 end
 
--- =========================================================
--- UNDO SEE-THROUGH
--- =========================================================
 
 local function undoSeeThrough()
 
@@ -690,13 +714,15 @@ local function undoSeeThrough()
 		Color3.fromRGB(180, 180, 190)
 end
 
+
 -- =========================================================
 -- TOOL BIG
 -- =========================================================
 
 local function toolBig()
 
-	local char = LocalPlayer.Character
+	local char =
+		LocalPlayer.Character
 
 	if not char then
 		return
@@ -749,13 +775,15 @@ local function toolBig()
 	end
 end
 
+
 -- =========================================================
 -- CHARACTER HITBOX
 -- =========================================================
 
 local function charHitbox()
 
-	local name = NameBox.Text
+	local name =
+		NameBox.Text
 
 	if name == "" then
 
@@ -770,7 +798,8 @@ local function charHitbox()
 
 	local target = nil
 
-	name = string.lower(name)
+	name =
+		string.lower(name)
 
 	for _, plr in pairs(
 		Players:GetPlayers()
@@ -818,15 +847,11 @@ local function charHitbox()
 		hrp.Transparency = 0.5
 
 		StatusLabel.Text =
-			target.Name ..
-			" HRP made big"
+			target.Name
+			.. " HRP made big"
 
 		StatusLabel.TextColor3 =
-			Color3.fromRGB(
-				255,
-				100,
-				100
-			)
+			Color3.fromRGB(255, 100, 100)
 
 	else
 
@@ -834,13 +859,10 @@ local function charHitbox()
 			"No HumanoidRootPart found"
 
 		StatusLabel.TextColor3 =
-			Color3.fromRGB(
-				255,
-				80,
-				80
-			)
+			Color3.fromRGB(255, 80, 80)
 	end
 end
+
 
 -- =========================================================
 -- BUTTON CONNECTIONS
@@ -898,6 +920,7 @@ CharHitboxBtn.MouseButton1Click:Connect(
 	charHitbox
 )
 
+
 -- =========================================================
 -- CHARACTER RESPAWN
 -- =========================================================
@@ -908,10 +931,8 @@ LocalPlayer.CharacterAdded:Connect(
 		Character = newChar
 
 		HumanoidRootPart =
-			newChar:
-			WaitForChild(
+			newChar:WaitForChild(
 				"HumanoidRootPart"
 			)
 	end
 )
-```
