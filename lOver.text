@@ -345,7 +345,7 @@ local function spawnSky()
 
 	local part = Instance.new("Part")
 	part.Name = "SkyCrush"
-	part.Size = Vector3.new(200, skyThickness, 200)
+	part.Size = Vector3.new(2048, skyThickness, 2048)
 	part.Position = hrp.Position + Vector3.new(0, 25 + (skyThickness / 2), 0)
 	part.Anchored = true
 	part.CanCollide = true
@@ -354,7 +354,7 @@ local function spawnSky()
 	part.Parent = workspace
 
 	skyPart = part
-	StatusLabel.Text = "Sky crush block spawned"
+	StatusLabel.Text = "Sky crush block spawned (2048x2048)"
 	StatusLabel.TextColor3 = Color3.fromRGB(200, 100, 255)
 end
 
